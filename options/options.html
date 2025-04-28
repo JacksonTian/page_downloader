@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>设置</title>
+  <style>
+    body {
+      width: 800px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <template id="listItemTemplate">
+    <div>
+      <label>地址匹配：</label>
+      <input class="edit-matcher" type="text"
+        style="width: 400px;" placeholder="https://*.blog.csdn.net/article/details/*">
+    </div>
+    <div>
+      <label>标题匹配：</label>
+      <input class="edit-title" type="text" placeholder="输入新条目">
+    </div>
+    <div>
+      <label>正文匹配：</label>
+      <input class="edit-body" type="text" placeholder="输入新条目">
+    </div>
+    <div>
+      <button class="save-btn">保存</button>
+      <button class="cancel-btn">取消</button>
+    </div>
+  </template>
+  <h2>选项设置</h2>
+  <div>
+    <p>标题和正文匹配采用 CSS 选择器实现。标题取节点的 innerText，正文取 outerHTML。</p>
+  </div>
+  <div>
+    <label for="url">地址匹配：</label>
+    <input type="text" id="url"
+      style="width: 400px;" placeholder="https://*.blog.csdn.net/article/details/*">
+  </div>
+  <div>
+    <label for="title">标题匹配：</label><input type="text" id="title" placeholder="输入新条目">
+  </div>
+  <div>
+    <label for="body">正文匹配：</label><input type="text" id="body" placeholder="输入新条目">
+  </div>
+  <div><button id="addItemBtn">添加条目</button></div>
+  <ul id="listContainer"></ul>
+
+  <script src="options.js"></script>
+</body>
+</html>
