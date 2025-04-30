@@ -30,12 +30,12 @@ ${ctx.body};
 
 document.addEventListener('DOMContentLoaded', async function() {
   const downloadBtn = document.getElementById('downloadBtn');
-  const {listItems} = await chrome.storage.local.get('listItems');
+  const result = await chrome.storage.sync.get('listItems');
+  const listItems = result.listItems || [];
   // 获取当前活跃tab的URL
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true }); // 新增：获取活跃tab
   const currentUrl = tab.url; // 新增：使用tab的url属性
   const url = new URL(currentUrl);
-  console.log(url);
   const find = listItems.find((item) => {
     // 将通配符转换为正则表达式进行匹配
     const matcher = item.matcher;

@@ -19,7 +19,7 @@ function delegate(container, event, selector, handler) {
 document.addEventListener('DOMContentLoaded', async () => {
   const itemTpl = document.getElementById('listItemTemplate').innerHTML;
   // 初始化表单数据
-  const { listItems } = await chrome.storage.local.get(['listItems']);
+  const { listItems } = await chrome.storage.sync.get(['listItems']);
 
   const container = document.getElementById('listContainer');
 
@@ -30,9 +30,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const url = document.getElementById('url');
     const title = document.getElementById('title');
     const body = document.getElementById('body');
-    const { listItems } = await chrome.storage.local.get('listItems');
+    const result = await chrome.storage.sync.get('listItems');
+    const listItems = result.listItems || [];
     listItems.push(new Item(url.value, title.value, body.value));
-    await chrome.storage.local.set({ listItems });
+    await chrome.storage.sync.set({ listItems });
     renderList(listItems);
     // clean form
     url.value = '';
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function handleEdit(e) {
     const li = e.target.closest('li');
     const index = li.dataset.index;
-    const items = await chrome.storage.local.get('listItems');
+    const items = await chrome.storage.sync.get('listItems');
     const list = items.listItems;
     const item = list[index];
     li.innerHTML = itemTpl;
@@ -74,13 +75,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function handleSave(e) {
     const li = e.target.closest('li');
     const index = li.dataset.index;
-    const items = await chrome.storage.local.get('listItems');
+    const items = await chrome.storage.sync.get('listItems');
     const list = items.listItems;
     const item = list[index];
     item.matcher = li.querySelector('.edit-matcher').value.trim();
     item.title = li.querySelector('.edit-title').value.trim();
     item.body = li.querySelector('.edit-body').value.trim();
-    await chrome.storage.local.set({ listItems: list });
+    await chrome.storage.sync.set({ listItems: list });
     renderList(list);
   }
 
@@ -88,9 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function handleDelete(e) {
     const li = e.target.closest('li');
     const index = li.dataset.index;
-    const items = await chrome.storage.local.get('listItems');
+    const items = await chrome.storage.sync.get('listItems');
     const list = items.listItems.filter((_, i) => i !== parseInt(index));
-    await chrome.storage.local.set({ listItems: list });
+    await chrome.storage.sync.set({ listItems: list });
     renderList(list);
   }
 
