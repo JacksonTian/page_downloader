@@ -16,8 +16,39 @@ function delegate(container, event, selector, handler) {
   });
 }
 
+function tplItem(item, index) {
+  return `<li data-index="${index}">
+      ${item.matcher}
+      ${item.title}
+      ${item.body}
+      <button class="edit-btn">编辑</button>
+      <button class="delete-btn">删除</button>
+    </li>`;
+}
+
+function tplItemEdit(item, index) {
+  return `<div>
+        <label>地址匹配：</label>
+        <textarea class="edit-matcher"
+          style="width: 400px; height: 50px" placeholder="https://*.blog.csdn.net/article/details/*">${item.matcher}</textarea>
+      </div>
+      <div>
+        <label>标题匹配：</label>
+        <textarea class="edit-title"
+          style="width: 400px; height: 50px" placeholder="输入新条目">${item.title}</textarea>
+      </div>
+      <div>
+        <label>正文匹配：</label>
+        <textarea class="edit-body"
+          style="width: 400px; height: 50px" placeholder="输入新条目">${item.body}</textarea>
+      </div>
+      <div>
+        <button class="save-btn">保存</button>
+        <button class="cancel-btn">取消</button>
+      </div>`;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  const itemTpl = document.getElementById('listItemTemplate').innerHTML;
   // 初始化表单数据
   const { listItems } = await chrome.storage.sync.get(['listItems']);
 
@@ -48,15 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 渲染列表
   function renderList(list) {
-    container.innerHTML = list.map((item, index) => `
-      <li data-index="${index}">
-        ${item.matcher}
-        ${item.title}
-        ${item.body}
-        <button class="edit-btn">编辑</button>
-        <button class="delete-btn">删除</button>
-      </li>`
-    ).join('');
+    container.innerHTML = list.map((item, index) => tplItem(item, index)).join('');
   }
 
   // 编辑/保存处理
@@ -66,10 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const items = await chrome.storage.sync.get('listItems');
     const list = items.listItems;
     const item = list[index];
-    li.innerHTML = itemTpl;
-    li.querySelector('.edit-matcher').value = item.matcher;
-    li.querySelector('.edit-title').value = item.title;
-    li.querySelector('.edit-body').value = item.body;
+    li.innerHTML = tplItemEdit(item);
   }
 
   async function handleSave(e) {
