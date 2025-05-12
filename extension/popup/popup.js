@@ -21,7 +21,7 @@ body img {
 </head>
 <body>
 <div id="body-content">
-${ctx.body};
+${ctx.body}
 </div>
 </body>
 </html>
@@ -30,6 +30,7 @@ ${ctx.body};
 
 document.addEventListener('DOMContentLoaded', async function() {
   const downloadBtn = document.getElementById('downloadBtn');
+
   const result = await chrome.storage.sync.get('listItems');
   const listItems = result.listItems || [];
   // 获取当前活跃tab的URL
@@ -80,6 +81,39 @@ document.addEventListener('DOMContentLoaded', async function() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+    }
+  });
+
+  const previewBtn = document.getElementById('previewBtn');
+  previewBtn.classList.toggle('avaliable', find != null);
+  previewBtn.addEventListener('click', async () => {
+    if (find) {
+      // High light the matched item
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+      const result = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (titleSelector, bodySelector) => {
+          const titleNode = document.querySelector(titleSelector);
+          if (titleNode) {
+            titleNode.classList.add('page_downloader_highlight');
+          }
+  
+          const bodyNode = document.querySelector(bodySelector);
+          if (bodyNode) {
+            bodyNode.classList.add('page_downloader_highlight');
+          }
+          return {
+            title: titleNode ? true : false,
+            body: bodyNode ? true : false
+          };
+        },
+        args: [find.title, find.body]
+      });
+      
+      if (result && result[0]) {
+        const {title, body} = result[0].result;
+      }
     }
   });
 });
