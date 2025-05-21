@@ -61,9 +61,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     const result = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (titleSelector, bodySelector) => {
+        const body = document.querySelector(bodySelector).outerHTML;
+        const url = new URL(window.location.href);
+        let improvedBody = body.replace(/src="\/\//g, `src="${url.protocol}//`);
         return {
           title: document.querySelector(titleSelector).innerText.trim(),
-          body: document.querySelector(bodySelector).outerHTML
+          body: improvedBody
         };
       },
       args: [find.title, find.body]
