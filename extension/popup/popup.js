@@ -1,8 +1,11 @@
 const templateFn = function (ctx) {
   return `
-<html>
+<html lang="zh-CN">
 <head>
 <title>${ctx.title}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="url" content="${ctx.url}">
 <style>
 body {
   width: 1054px;
@@ -75,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (result && result[0]) {
       const {title, body} = result[0].result;
 
-      const blob = new Blob([templateFn({title, body})], { type: 'text/html' });
+      const blob = new Blob([templateFn({title, body, url: currentUrl})], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
