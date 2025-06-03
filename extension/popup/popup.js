@@ -61,6 +61,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    // remove injected css
+    await chrome.scripting.removeCSS({
+      target: { tabId: tab.id },
+      files: ['styles/inject.css']
+    });
+
     const result = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (titleSelector, bodySelector) => {
@@ -97,18 +103,30 @@ document.addEventListener('DOMContentLoaded', async function() {
       // High light the matched item
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-      const result = await chrome.scripting.executeScript({
+      await chrome.scripting.insertCSS({
+        target: { tabId: tab.id },
+        files: ['styles/inject.css']
+      });
+
+      await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: (titleSelector, bodySelector) => {
           const titleNode = document.querySelector(titleSelector);
           if (titleNode) {
             titleNode.classList.add('page_downloader_highlight');
+            setTimeout(() => {
+              titleNode.classList.remove('page_downloader_highlight');
+            }, 3000);
           }
-  
+
           const bodyNode = document.querySelector(bodySelector);
           if (bodyNode) {
             bodyNode.classList.add('page_downloader_highlight');
+            setTimeout(() => {
+              bodyNode.classList.remove('page_downloader_highlight');
+            }, 3000);
           }
+
           return {
             title: titleNode ? true : false,
             body: bodyNode ? true : false
@@ -116,10 +134,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         },
         args: [find.title, find.body]
       });
-      
-      if (result && result[0]) {
-        const {title, body} = result[0].result;
-      }
     }
   });
 });
